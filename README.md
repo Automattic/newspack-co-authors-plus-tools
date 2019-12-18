@@ -1,9 +1,6 @@
-# newspack-co-authors-plus-tools
-Newspack Co-Authors Plus Tools Plugin
+# Newspack Co-Authors Plus Tools
 
-Helper CLI tools for mass processing content for use with the Co-Authors Plus plugin.
-
-Depends on the Co-Authors Plus plugin.
+Helper CLI tools for mass processing content for use with the Co-Authors Plus plugin. Depends on the Co-Authors Plus plugin.
 
 ## Example CLI use
 
