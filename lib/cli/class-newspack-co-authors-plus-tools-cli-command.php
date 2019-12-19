@@ -26,7 +26,9 @@ class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
 		$args      = array(
 			'post_type'      => 'post',
 			'post_status'    => 'publish',
-			'posts_per_page' => -1,
+			// The WordPress.VIP.PostsPerPage.posts_per_page_posts_per_page coding standard doesn't like '-1' (all posts) for
+			// posts_per_page value, so we'll set it to something really high.
+			'posts_per_page' => 1000000,
 		);
 		$the_query = new WP_Query( $args );
 
