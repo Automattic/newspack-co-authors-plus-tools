@@ -4,4 +4,4 @@ Helper CLI tools for mass processing content for use with the Co-Authors Plus pl
 
 ## Example CLI use
 
-`wp newspack_tags_to_authors assign_authors` -- runs through all the public Posts, and converts tags beginning with "author:" to Guest Authors.
+`wp newspack-co-authors-plus-tools tags-to-guest-authors` -- runs through all the public Posts, and converts tags beginning with "author:" to Guest Authors, and assigns them as co-authors to the post.
