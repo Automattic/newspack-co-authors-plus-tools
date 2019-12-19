@@ -22,17 +22,22 @@ class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
 		include_once __DIR__ . '/../../../co-authors-plus/co-authors-plus.php';
 		$coauthors_guest_authors = new CoAuthors_Guest_Authors();
 		$tags_to_guest_authors   = new Newspack_Tags_To_Guest_Authors( $coauthors_plus, $coauthors_guest_authors );
-		WP_CLI::line( 'Converting...' );
 
 		$args      = array(
-			'post_type'   => 'post',
-			'post_status' => 'publish',
+			'post_type'      => 'post',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
 		);
 		$the_query = new WP_Query( $args );
 
+		$total_posts = $the_query->found_posts;
+		WP_CLI::line( 'Converting tags to Guest Authors for ' . $total_posts . ' Posts...' );
+
 		$posts_number = 0;
+		$progress_bar = \WP_CLI\Utils\make_progress_bar( 'Progress', $total_posts );
 		if ( $the_query->have_posts() ) {
 			while ( $the_query->have_posts() ) {
+				$progress_bar->tick();
 				$the_query->the_post();
 				$posts_number++;
 				$tags_to_guest_authors->convert_tags_to_guest_authors( get_the_ID() );
@@ -41,7 +46,6 @@ class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
 
 		wp_reset_postdata();
 
-		WP_CLI::line( 'Converted tags to Guest Authors for ' . $posts_number . ' Posts.' );
 		WP_CLI::line( 'Done!' );
 	}
 
