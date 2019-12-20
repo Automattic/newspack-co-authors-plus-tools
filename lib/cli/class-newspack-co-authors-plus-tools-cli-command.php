@@ -14,9 +14,12 @@ class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
 	 * Convert all published Posts tags which start with Newspack_Tags_To_Guest_Authors::$tag_author_prefix to Guest Authors.
 	 *
 	 * @param array $args       Args.
-	 * @param array $assoc_args AssocArgs.
+	 * @param array $assoc_args AssocArgs: --unset-author-tags will allso unset the "author tags" from the post after converting
+	 *                          them to Guest Users.
 	 */
 	public function __invoke( $args = array(), $assoc_args = array() ) {
+		$unset_author_tags = isset( $assoc_args['unset-author-tags'] ) ? true : false;
+
 		global $coauthors_plus;
 		include_once __DIR__ . '/../class-newspack-tags-to-guest-authors.php';
 		include_once __DIR__ . '/../../../co-authors-plus/co-authors-plus.php';
@@ -40,9 +43,9 @@ class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
 		if ( $the_query->have_posts() ) {
 			while ( $the_query->have_posts() ) {
 				$progress_bar->tick();
-				$the_query->the_post();
 				$posts_number++;
-				$tags_to_guest_authors->convert_tags_to_guest_authors( get_the_ID() );
+				$the_query->the_post();
+				$tags_to_guest_authors->convert_tags_to_guest_authors( get_the_ID(), $unset_author_tags );
 			}
 		}
 
@@ -50,5 +53,4 @@ class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
 
 		WP_CLI::line( 'Done!' );
 	}
-
 }

@@ -45,17 +45,39 @@ class Newspack_Tags_To_Guest_Authors {
 	/**
 	 * Converts tags starting with $tag_author_prefix to Guest Authors, and assigns them to the Post.
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int  $post_id           Post ID.
+	 * @param bool $unset_author_tags Should the "author tags" be unset from the post once they've been converted to Guest Users.
 	 */
-	public function convert_tags_to_guest_authors( $post_id ) {
-		$post_tags = get_the_tags( $post_id );
-		if ( false === $post_tags ) {
+	public function convert_tags_to_guest_authors( $post_id, $unset_author_tags = true ) {
+		$all_tags = get_the_tags( $post_id );
+		if ( false === $all_tags ) {
 			return;
 		}
 
-		$authors_names    = $this->convert_tags_to_author_names( $post_tags );
-		$guest_author_ids = $this->create_guest_authors( $authors_names );
+		$author_tags_with_names = $this->get_tags_with_author_names( $all_tags );
+		if ( empty( $author_tags_with_names ) ) {
+			return;
+		}
+
+		$author_tags  = [];
+		$author_names = [];
+		foreach ( $author_tags_with_names as $author_tag_with_name ) {
+			$author_tags[]  = $author_tag_with_name['tag'];
+			$author_names[] = $author_tag_with_name['author_name'];
+		}
+
+		$guest_author_ids = $this->create_guest_authors( $author_names );
 		$this->assign_guest_authors_to_post( $guest_author_ids, $post_id );
+
+		if ( $unset_author_tags ) {
+			$new_tags      = $this->get_tags_diff( $all_tags, $author_tags );
+			$new_tag_names = [];
+			foreach ( $new_tags as $new_tag ) {
+				$new_tag_names[] = $new_tag->name;
+			}
+
+			wp_set_post_terms( $post_id, implode( ',', $new_tag_names ), 'post_tag' );
+		}
 	}
 
 	/**
@@ -69,19 +91,26 @@ class Newspack_Tags_To_Guest_Authors {
 	 *
 	 * @param array $tags An array of tags.
 	 *
-	 * @return array An array of author names.
+	 * @return array An array with elements containing two keys:
+	 *      'tag' holding the full WP_Term object (tag),
+	 *      and 'author_name' with the extracted author name.
 	 */
-	private function convert_tags_to_author_names( array $tags ) {
-		$authors_names = [];
-		if ( ! empty( $tags ) ) {
-			foreach ( $tags as $tag ) {
-				if ( substr( $tag->name, 0, strlen( $this->tag_author_prefix ) ) == $this->tag_author_prefix ) {
-					$authors_names[] = substr( $tag->name, strlen( $this->tag_author_prefix ) );
-				}
+	private function get_tags_with_author_names( array $tags ) {
+		$author_tags = [];
+		if ( empty( $tags ) ) {
+			return $author_tags;
+		}
+
+		foreach ( $tags as $tag ) {
+			if ( substr( $tag->name, 0, strlen( $this->tag_author_prefix ) ) == $this->tag_author_prefix ) {
+				$author_tags[] = [
+					'tag'         => $tag,
+					'author_name' => substr( $tag->name, strlen( $this->tag_author_prefix ) ),
+				];
 			}
 		}
 
-		return $authors_names;
+		return $author_tags;
 	}
 
 	/**
@@ -129,5 +158,34 @@ class Newspack_Tags_To_Guest_Authors {
 			$coauthors[]  = $guest_author->user_nicename;
 		}
 		$this->coauthors_plus->add_coauthors( $post_id, $coauthors, $append_to_existing_users = false );
+	}
+
+	/**
+	 * A helper function, returns a diff of $tags_a - $tags_b (filters out $tags_b from $tags_a).
+	 *
+	 * @param array $tags_a Array of WP_Term objects (tags).
+	 * @param array $tags_b Array of WP_Term objects (tags).
+	 *
+	 * @return array An array of resulting WP_Term objects.
+	 */
+	private function get_tags_diff( $tags_a, $tags_b ) {
+		$tags_diff = [];
+
+		// Filter out author tags from all the tags.
+		foreach ( $tags_a as $tag ) {
+			$tag_found_in_tags_b = false;
+			foreach ( $tags_b as $author_tag ) {
+				if ( $author_tag->term_id === $tag->term_id ) {
+					$tag_found_in_tags_b = true;
+					break;
+				}
+			}
+
+			if ( ! $tag_found_in_tags_b ) {
+				$tags_diff[] = $tag;
+			}
+		}
+
+		return $tags_diff;
 	}
 }
