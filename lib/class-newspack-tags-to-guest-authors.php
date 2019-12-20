@@ -171,7 +171,6 @@ class Newspack_Tags_To_Guest_Authors {
 	private function get_tags_diff( $tags_a, $tags_b ) {
 		$tags_diff = [];
 
-		// Filter out author tags from all the tags.
 		foreach ( $tags_a as $tag ) {
 			$tag_found_in_tags_b = false;
 			foreach ( $tags_b as $author_tag ) {
