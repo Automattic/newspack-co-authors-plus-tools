@@ -38,12 +38,10 @@ class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
 		$total_posts = $the_query->found_posts;
 		WP_CLI::line( 'Converting tags to Guest Authors for ' . $total_posts . ' Posts...' );
 
-		$posts_number = 0;
 		$progress_bar = \WP_CLI\Utils\make_progress_bar( 'Progress', $total_posts );
 		if ( $the_query->have_posts() ) {
 			while ( $the_query->have_posts() ) {
 				$progress_bar->tick();
-				$posts_number++;
 				$the_query->the_post();
 				$tags_to_guest_authors->convert_tags_to_guest_authors( get_the_ID(), $unset_author_tags );
 			}
