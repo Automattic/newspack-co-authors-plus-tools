@@ -2,7 +2,9 @@
 
 Helper CLI tools for mass processing content for use with the Co-Authors Plus plugin.
 
-Depends on the Co-Authors Plus plugin - this plugin's not fancy :) so make sure you install it yourself, or it will break in errors.
+## Installation
+
+First install the [Co-Authors Plus plugin](https://wordpress.org/plugins/co-authors-plus/), and then install this Plugin (see Releases).
 
 ## Example CLI uses
 
