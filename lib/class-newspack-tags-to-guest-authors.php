@@ -43,6 +43,22 @@ class Newspack_Tags_To_Guest_Authors {
 	}
 
 	/**
+	 * Checks whether Co-authors Plus is installed and active.
+	 *
+	 * @return bool Is active.
+	 */
+	public function is_coauthors_active() {
+		$active = false;
+		foreach ( wp_get_active_and_valid_plugins() as $plugin ) {
+			if ( false !== strrpos( $plugin, 'Dco-authors-plus.php' ) ) {
+				$active = true;
+			}
+		}
+
+		return $active;
+	}
+
+	/**
 	 * Converts tags starting with $tag_author_prefix to Guest Authors, and assigns them to the Post.
 	 *
 	 * @param int  $post_id           Post ID.

@@ -8,6 +8,8 @@
  **/
 
 if ( class_exists( 'WP_CLI' ) ) {
-	require_once 'lib/cli/class-newspack-co-authors-plus-tools-cli-command.php';
-	WP_CLI::add_command( 'newspack-co-authors-plus-tools tags-to-guest-authors', 'Newspack_Co_Authors_Plus_Tools_Cli_Command' );
+	require_once 'lib/cli/class-newspack-co-authors-plus-tools-tags-with-prefix-to-guest-authors-command.php';
+	require_once 'lib/cli/class-newspack-co-authors-plus-tools-tags-with-taxonomy-to-guest-authors-command.php';
+	WP_CLI::add_command( 'newspack-co-authors-plus-tools tags-with-prefix-to-guest-authors', 'Newspack_Co_Authors_Plus_Tools_Tags_With_Prefix_To_Guest_Authors_Command' );
+	WP_CLI::add_command( 'newspack-co-authors-plus-tools tags-with-taxonomy-to-guest-authors', 'Newspack_Co_Authors_Plus_Tools_Tags_With_Taxonomy_To_Guest_Authors_Command' );
 }

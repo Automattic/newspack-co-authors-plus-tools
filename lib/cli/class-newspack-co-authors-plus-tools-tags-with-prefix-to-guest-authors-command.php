@@ -1,14 +1,14 @@
 <?php
 /**
- * Main plugin class.
+ * Command class, tags with prefix to authors.
  *
  * @package Newspack
  */
 
 /**
- * Class Newspack_Co_Authors_Plus_Tools_Cli_Command.
+ * Class Newspack_Co_Authors_Plus_Tools_Tags_With_Prefix_To_Guest_Authors_Command.
  */
-class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
+class Newspack_Co_Authors_Plus_Tools_Tags_With_Prefix_To_Guest_Authors_Command extends WP_CLI_Command {
 
 	/**
 	 * Convert all published Posts tags which start with Newspack_Tags_To_Guest_Authors::$tag_author_prefix to Guest Authors.
@@ -25,6 +25,10 @@ class Newspack_Co_Authors_Plus_Tools_Cli_Command extends WP_CLI_Command {
 		include_once __DIR__ . '/../../../co-authors-plus/co-authors-plus.php';
 		$coauthors_guest_authors = new CoAuthors_Guest_Authors();
 		$tags_to_guest_authors   = new Newspack_Tags_To_Guest_Authors( $coauthors_plus, $coauthors_guest_authors );
+
+		if ( false === $tags_to_guest_authors->is_coauthors_active() ) {
+			WP_CLI::error( 'The Co-authors Plus plugin does not seem to be active.' );
+		}
 
 		$args      = array(
 			'post_type'      => 'post',
