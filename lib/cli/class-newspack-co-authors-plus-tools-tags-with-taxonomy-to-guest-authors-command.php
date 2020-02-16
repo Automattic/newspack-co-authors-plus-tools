@@ -21,10 +21,12 @@ class Newspack_Co_Authors_Plus_Tools_Tags_With_Taxonomy_To_Guest_Authors_Command
 
 		// Validate and get arguments/params.
 		if ( ! isset( $args[0] ) || empty( $args[0] ) ) {
-			WP_CLI::error( 'Invalid taxonomy name.' );
+			WP_CLI::error( 'Invalid tag taxonomy name.' );
 		}
-		$taxonomy = $args[0];
-		$unset_author_tags = isset( $assoc_args['unset-author-tags'] ) ? true : false;
+		$tag_taxonomy = $args[0];
+
+		// TODO: also enable unset author tags.
+		// $unset_author_tags = isset( $assoc_args['unset-author-tags'] ) ? true : false;
 
 		global $coauthors_plus;
 		include_once __DIR__ . '/../class-newspack-tags-to-guest-authors.php';
@@ -36,6 +38,22 @@ class Newspack_Co_Authors_Plus_Tools_Tags_With_Taxonomy_To_Guest_Authors_Command
 			WP_CLI::error( 'The Co-authors Plus plugin does not seem to be active.' );
 		}
 
-		// TODO
+		// Get posts which have tags with taxonomy
+		$post_ids = $tags_to_guest_authors->get_posts_with_tag_with_taxonomy( $tag_taxonomy );
+
+		$total_posts = count( $post_ids );
+		$progress_bar = \WP_CLI\Utils\make_progress_bar( 'Progress', $total_posts );
+		foreach ( $post_ids as $post_id ) {
+			$progress_bar->tick();
+
+			$author_names = $tags_to_guest_authors->get_post_tags_with_taxonomy( $post_id, $tag_taxonomy );
+			$guest_author_ids = $tags_to_guest_authors->create_guest_authors( $author_names );
+			$tags_to_guest_authors->assign_guest_authors_to_post( $guest_author_ids, $post_id );
+		}
+
+		wp_reset_postdata();
+
+		WP_CLI::line( sprintf( 'Converted tags with taxonomy %s to Guest Authors for %d posts.', $tag_taxonomy, $total_posts ) );
+		WP_CLI::success( 'Done!' );
 	}
 }
