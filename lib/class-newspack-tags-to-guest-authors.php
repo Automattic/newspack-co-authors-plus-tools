@@ -70,7 +70,6 @@ class Newspack_Tags_To_Guest_Authors {
 		$post_ids = [];
 
 		// TODO: switch to WP_Query instead of raw SQL ( e.g. if ( ! taxonomy_exists( $tag ) ) register_taxonomy( $tag, $object_type ) ).
-
 		$sql_get_post_ids_with_taxonomy = <<<SQL
 			SELECT DISTINCT wp.ID
 			FROM wp_posts wp
@@ -81,11 +80,12 @@ class Newspack_Tags_To_Guest_Authors {
 			AND wp.post_status = 'publish'
 			ORDER BY wp.ID;
 SQL;
-		$results_post_ids = $wpdb->get_results( $wpdb->prepare( $sql_get_post_ids_with_taxonomy, $tag_taxonomy ), ARRAY_A );
+		// phpcs:ignore -- false positive, all params are fully sanitized.
+		$results_post_ids               = $wpdb->get_results( $wpdb->prepare( $sql_get_post_ids_with_taxonomy, $tag_taxonomy ), ARRAY_A );
 
 		if ( ! empty( $results_post_ids ) ) {
 			foreach ( $results_post_ids as $result_post_id ) {
-				$post_ids[] = $result_post_id[ 'ID' ];
+				$post_ids[] = $result_post_id['ID'];
 			}
 		}
 
@@ -95,7 +95,7 @@ SQL;
 	/**
 	 * For a post ID, gets tags which have the given taxonomy.
 	 *
-	 * @param int $post_id         Post ID.
+	 * @param int    $post_id         Post ID.
 	 * @param string $tag_taxonomy Tag tagxonomy.
 	 *
 	 * @return array Tag names with given taxonomy which this post has.
@@ -105,7 +105,6 @@ SQL;
 		$names = [];
 
 		// TODO: switch to WP_Query instead of raw SQL ( e.g. if ( ! taxonomy_exists( $tag ) ) register_taxonomy( $tag, $object_type ) ).
-		
 		$sql_get_post_ids_with_taxonomy = <<<SQL
 			SELECT DISTINCT wt.name
 			FROM wp_terms wt
@@ -115,10 +114,12 @@ SQL;
 			WHERE wp.post_type = 'post'
 			AND wp.post_status = 'publish'
 SQL;
-		$results_names = $wpdb->get_results( $wpdb->prepare( $sql_get_post_ids_with_taxonomy, $tag_taxonomy, $post_id ), ARRAY_A );
+		// phpcs:ignore -- false positive, all params are fully sanitized.
+		$results_names                  = $wpdb->get_results( $wpdb->prepare( $sql_get_post_ids_with_taxonomy, $tag_taxonomy, $post_id ), ARRAY_A );
 		if ( ! empty( $results_names ) ) {
 			foreach ( $results_names as $results_name ) {
-				$names[] = $results_name[ 'name' ];;
+				$names[] = $results_name['name'];
+
 			}
 		}
 

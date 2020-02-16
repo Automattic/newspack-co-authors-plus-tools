@@ -5,6 +5,8 @@
  * Author: Automattic
  * Author URI: https://newspack.blog/
  * License: GPL2
+ *
+ * @package Newspack
  **/
 
 if ( class_exists( 'WP_CLI' ) ) {
