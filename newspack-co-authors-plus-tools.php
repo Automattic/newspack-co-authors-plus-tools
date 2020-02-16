@@ -2,6 +2,7 @@
 /**
  * Plugin Name: Newspack Co-Authors Plus Tools
  * Description: Helper CLI tools for mass processing content for use with the Co-Authors Plus plugin.
+ * Version: 0.0.3-alpha
  * Author: Automattic
  * Author URI: https://newspack.blog/
  * License: GPL2
